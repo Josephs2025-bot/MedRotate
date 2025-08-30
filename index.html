@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedRotate - Clinical Notes for Medical Students</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header with logo and navigation -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-stethoscope"></i>
+            <h1>MedRotate</h1>
+        </div>
+        <nav class="user-actions">
+            <button class="btn btn-outline">Sign Up</button>
+            <button class="btn btn-primary">Login</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar for rotation folders -->
+        <aside class="sidebar">
+            <div class="sidebar-title">
+                <h2>My Rotations</h2>
+                <button class="icon-btn" id="add-rotation">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="rotations-list">
+                <div class="rotation-item active">
+                    <i class="fas fa-heart-pulse"></i>
+                    <span>Cardiology</span>
+                </div>
+                <div class="rotation-item">
+                    <i class="fas fa-brain"></i>
+                    <span>Neurology</span>
+                </div>
+                <div class="rotation-item">
+                    <i class="fas fa-baby"></i>
+                    <span>Pediatrics</span>
+                </div>
+                <div class="rotation-item">
+                    <i class="fas fa-bone"></i>
+                    <span>Orthopedics</span>
+                </div>
+                <div class="rotation-item">
+                    <i class="fas fa-lungs"></i>
+                    <span>Pulmonology</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main content area -->
+        <main class="main-content">
+            <div class="content-header">
+                <h2 class="current-rotation">Cardiology Rotation</h2>
+                <div class="date-display">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="current-date">September 15, 2023</span>
+                </div>
+            </div>
+
+            <!-- Notes grid -->
+            <div class="notes-grid">
+                <!-- Note cards will go here -->
+                <article class="note-card">
+                    <div class="note-date">September 14, 2023</div>
+                    <h3 class="note-title">Hypertension Cases</h3>
+                    <div class="note-content">
+                        <p>Reviewed three interesting hypertension cases today. Patient JR exhibited resistant hypertension that wasn't responding to standard triple therapy.</p>
+                        <p>Plan: Consider renal artery ultrasound to rule out secondary causes.</p>
+                    </div>
+                    <div class="note-actions">
+                        <button class="icon-btn"><i class="fas fa-edit"></i></button>
+                        <button class="icon-btn"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </article>
+
+                <article class="note-card">
+                    <div class="note-date">September 12, 2023</div>
+                    <h3 class="note-title">ECG Interpretation</h3>
+                    <div class="note-content">
+                        <p>Dr. Smith taught us how to identify subtle STEMI patterns. Key learning: Always compare with previous ECGs when available.</p>
+                        <p>Remember: ST elevation in V2-V4 with reciprocal changes in inferior leads.</p>
+                    </div>
+                    <div class="note-actions">
+                        <button class="icon-btn"><i class="fas fa-edit"></i></button>
+                        <button class="icon-btn"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </article>
+
+                <article class="note-card">
+                    <div class="note-date">September 10, 2023</div>
+                    <h3 class="note-title">Heart Failure Management</h3>
+                    <div class="note-content">
+                        <p>New guidelines for HFrEF: Start with SGLT2 inhibitors early in the treatment algorithm.</p>
+                        <p>Patient education: Daily weight monitoring and sodium restriction are crucial.</p>
+                    </div>
+                    <div class="note-actions">
+                        <button class="icon-btn"><i class="fas fa-edit"></i></button>
+                        <button class="icon-btn"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Add new note button -->
+            <button class="add-note-btn">
+                <i class="fas fa-plus"></i>
+                Add New Note
+            </button>
+        </main>
+    </div>
+
+    <!-- Create new note modal (hidden by default) -->
+    <div class="modal" id="note-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Note</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="note-title">Title</label>
+                    <input type="text" id="note-title" placeholder="Enter note title">
+                </div>
+                <div class="form-group">
+                    <label for="note-content">Content</label>
+                    <textarea id="note-content" rows="6" placeholder="Write your note here..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-outline">Cancel</button>
+                    <button class="btn btn-primary">Save Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create new rotation modal (hidden by default) -->
+    <div class="modal" id="rotation-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Rotation</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="rotation-name">Rotation Name</label>
+                    <input type="text" id="rotation-name" placeholder="e.g., Cardiology, Surgery">
+                </div>
+                <div class="form-group">
+                    <label for="rotation-icon">Icon</label>
+                    <select id="rotation-icon">
+                        <option value="heart">Heart</option>
+                        <option value="brain">Brain</option>
+                        <option value="baby">Pediatrics</option>
+                        <option value="bone">Orthopedics</option>
+                        <option value="lungs">Pulmonology</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-outline">Cancel</button>
+                    <button class="btn btn-primary">Create Rotation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline status indicator -->
+    <div class="offline-status">
+        <i class="fas fa-wifi"></i>
+        <span>You are currently offline. Changes will sync when connected.</span>
+    </div>
+
+    <!--link to the javascript file-->
+    <script src="script2.js"></script>
+
+</body>
+</html>
