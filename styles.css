@@ -519,3 +519,81 @@ header {
         border: 1px solid var(--light-gray);
     }
 }
+
+/* Connection status styles */
+.connection-status {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background-color: var(--success);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideIn 0.3s ease;
+}
+
+.connection-status.error {
+    background-color: var(--danger);
+}
+
+.connection-status i {
+    font-size: 1.2rem;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--primary);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* API error states */
+.api-error {
+    border: 1px solid var(--danger);
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Responsive adjustments for connection status */
+@media (max-width: 600px) {
+    .connection-status {
+        top: 70px;
+        right: 10px;
+        left: 10px;
+        font-size: 0.9rem;
+    }
+}

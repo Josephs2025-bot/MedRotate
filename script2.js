@@ -636,3 +636,123 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the app
     init();
 });
+
+// Backend API communication functions
+const API_BASE_URL = 'http://localhost:5000/api';
+
+// Test backend connection
+async function testBackendConnection() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/test`);
+        const data = await response.json();
+        console.log('Backend connection:', data.message);
+        
+        showConnectionStatus('success', `Connected to backend: ${data.message}`);
+    } catch (error) {
+        console.error('Backend connection failed:', error);
+        showConnectionStatus('error', 'Backend connection failed. Make sure your Flask server is running on port 5000.');
+    }
+}
+
+// Show connection status message
+function showConnectionStatus(type, message) {
+    const statusEl = document.createElement('div');
+    statusEl.className = `connection-status ${type}`;
+    statusEl.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'wifi' : 'exclamation-triangle'}"></i>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(statusEl);
+    
+    setTimeout(() => {
+        statusEl.remove();
+    }, 3000);
+}
+
+// API functions for rotations
+async function apiGetRotations() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/rotations`);
+        return await response.json();
+    } catch (error) {
+        console.error('Failed to fetch rotations:', error);
+        return [];
+    }
+}
+
+async function apiCreateRotation(rotationData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/rotations`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(rotationData)
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Failed to create rotation:', error);
+        throw error;
+    }
+}
+
+// API functions for notes
+async function apiGetNotes(rotationId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/notes?rotation_id=${rotationId}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Failed to fetch notes:', error);
+        return [];
+    }
+}
+
+async function apiCreateNote(noteData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/notes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(noteData)
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Failed to create note:', error);
+        throw error;
+    }
+}
+
+// Update your existing loadRotations function to use the API
+async function loadRotations() {
+    // Replace the local storage code with API call
+    const rotations = await apiGetRotations();
+    
+    if (rotations.length === 0) {
+        // If no rotations, create default ones via API
+        const defaultRotations = [
+            { id: generateId(), name: 'Cardiology', icon: 'heart-pulse' },
+            { id: generateId(), name: 'Neurology', icon: 'brain' },
+            { id: generateId(), name: 'Pediatrics', icon: 'baby' }
+        ];
+        
+        for (const rotation of defaultRotations) {
+            await apiCreateRotation(rotation);
+        }
+        
+        // Reload after creating defaults
+        return await loadRotations();
+    }
+    
+    // Update your UI with the rotations from API
+    renderRotations(rotations);
+    return rotations;
+}
+
+// Call this when your app loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Add this line to test backend connection
+    testBackendConnection();
+    
+    // Your existing initialization code...
+});
