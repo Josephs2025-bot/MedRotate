@@ -437,6 +437,60 @@ header {
     opacity: 0.9;
 }
 
+/* Note Taker Page Styles */
+.note-taker-page {
+    display: none;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 70px);
+    background: var(--light);
+    z-index: 2000;
+    overflow-y: auto;
+}
+
+.note-taker-page.active {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.note-taker-content {
+    margin: 2rem auto;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    padding: 2.5rem 2rem;
+    width: 90vw;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.note-taker-content input,
+.note-taker-content textarea {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid var(--light-gray);
+    margin-bottom: 1rem;
+}
+
+.note-taker-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.autosave-status {
+    font-size: 0.95rem;
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+}
+
 /* Responsive Design */
 @media (max-width: 900px) {
     .container {
@@ -483,6 +537,11 @@ header {
     
     .modal-content {
         width: 95%;
+    }
+    
+    .note-taker-content {
+        padding: 1rem;
+        max-width: 100vw;
     }
 }
 

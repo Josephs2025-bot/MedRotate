@@ -81,7 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Set active rotation and load its notes
     function setActiveRotation(rotationId) {
-        state.currentRotation = state.rotations.find(r => r.id === rotationId);
+        const rotations = JSON.parse(localStorage.getItem('medrotate_rotations') || 'null') || KENYA_ROTATIONS;
+        state.currentRotation = rotations.find(r => r.id === rotationId);
         elements.currentRotation.textContent = `${state.currentRotation.name} Rotation`;
         
         // Update active class in UI
@@ -120,6 +121,13 @@ document.addEventListener('DOMContentLoaded', function() {
             rotationEl.addEventListener('click', () => setActiveRotation(rotation.id));
             elements.rotationsList.appendChild(rotationEl);
         });
+        
+        // Add Rotation tab
+        const addDiv = document.createElement('div');
+        addDiv.className = 'rotation-item';
+        addDiv.innerHTML = `<i class="fas fa-plus"></i><span>Add Rotation</span>`;
+        addDiv.onclick = () => openRotationModal();
+        elements.rotationsList.appendChild(addDiv);
     }
 
     // Render notes in the main content area
@@ -638,7 +646,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Backend API communication functions
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://10.250.34.171:8080/api';
 
 // Test backend connection
 async function testBackendConnection() {
@@ -756,3 +764,184 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Your existing initialization code...
 });
+
+const KENYA_ROTATIONS = [
+    { id: 'medicine', name: 'Medicine', icon: 'heart-pulse' },
+    { id: 'surgery', name: 'Surgery', icon: 'brain' },
+    { id: 'obgyn', name: 'Reproductive Health (OBGYN)', icon: 'lungs' },
+    { id: 'pediatrics', name: 'Pediatrics', icon: 'baby' },
+    { id: 'emergency', name: 'Emergency Medicine', icon: 'truck-medical' }
+];
+
+function renderSidebarRotations() {
+    const list = document.getElementById('rotations-list');
+    list.innerHTML = '';
+    const rotations = JSON.parse(localStorage.getItem('medrotate_rotations') || 'null') || KENYA_ROTATIONS;
+    rotations.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'rotation-item' + (state.currentRotation && state.currentRotation.id === r.id ? ' active' : '');
+        div.dataset.id = r.id;
+        div.innerHTML = `<i class="fas fa-${r.icon}"></i><span>${r.name}</span>`;
+        div.onclick = () => {
+            setActiveRotation(r.id);
+        };
+        list.appendChild(div);
+    });
+    // Add Rotation tab
+    const addDiv = document.createElement('div');
+    addDiv.className = 'rotation-item';
+    addDiv.innerHTML = `<i class="fas fa-plus"></i><span>Add Rotation</span>`;
+    addDiv.onclick = () => openRotationModal();
+    list.appendChild(addDiv);
+}
+
+function setActiveRotation(rotationId) {
+    const rotations = JSON.parse(localStorage.getItem('medrotate_rotations') || 'null') || KENYA_ROTATIONS;
+    state.currentRotation = rotations.find(r => r.id === rotationId);
+    renderSidebarRotations();
+    elements.currentRotation.textContent = `${state.currentRotation.name} Rotation`;
+    loadNotes();
+}
+
+function openNoteTakerPage(note = null) {
+    document.getElementById('note-taker-page').classList.add('active');
+    document.querySelector('.container').style.display = 'none';
+    const titleInput = document.getElementById('note-input-title');
+    const contentInput = document.getElementById('note-input-content');
+    const autosaveStatus = document.getElementById('autosave-status');
+    if (note) {
+        titleInput.value = note.title;
+        contentInput.value = note.content;
+        document.getElementById('note-taker-title').textContent = 'Edit Note';
+        document.getElementById('note-taker-page').dataset.noteId = note.id;
+    } else {
+        titleInput.value = '';
+        contentInput.value = '';
+        document.getElementById('note-taker-title').textContent = `New Note for ${state.currentRotation.name}`;
+        document.getElementById('note-taker-page').dataset.noteId = '';
+    }
+    autosaveStatus.textContent = '';
+}
+
+function closeNoteTakerPage() {
+    document.getElementById('note-taker-page').classList.remove('active');
+    document.querySelector('.container').style.display = '';
+    loadNotes();
+}
+
+function autosaveNoteTaker() {
+    clearTimeout(window._autosaveTimer);
+    window._autosaveTimer = setTimeout(() => {
+        const title = document.getElementById('note-input-title').value.trim();
+        const content = document.getElementById('note-input-content').value;
+        if (!title && !content) return;
+        let noteId = document.getElementById('note-taker-page').dataset.noteId;
+        let notes = JSON.parse(localStorage.getItem('medrotate_notes') || '[]');
+        if (!noteId) {
+            // New note
+            noteId = Date.now().toString();
+            document.getElementById('note-taker-page').dataset.noteId = noteId;
+            notes.push({
+                id: noteId,
+                rotationId: state.currentRotation.id,
+                title,
+                content,
+                date: new Date().toISOString()
+            });
+        } else {
+            // Update existing note
+            const note = notes.find(n => n.id === noteId);
+            if (note) {
+                note.title = title;
+                note.content = content;
+                note.date = new Date().toISOString();
+            }
+        }
+        localStorage.setItem('medrotate_notes', JSON.stringify(notes));
+        document.getElementById('autosave-status').textContent = 'Autosaved at ' + new Date().toLocaleTimeString();
+        // Optionally, send to backend API here
+    }, 700);
+}
+
+document.getElementById('note-input-title').oninput = autosaveNoteTaker;
+document.getElementById('note-input-content').oninput = autosaveNoteTaker;
+
+document.getElementById('note-taker-cancel').onclick = closeNoteTakerPage;
+document.getElementById('note-taker-save').onclick = function() {
+    autosaveNoteTaker();
+    closeNoteTakerPage();
+};
+
+elements.addNoteBtn.addEventListener('click', () => openNoteTakerPage());
+
+function loadNotes() {
+    const notesGrid = elements.notesGrid;
+    notesGrid.innerHTML = '';
+    const notes = JSON.parse(localStorage.getItem('medrotate_notes') || '[]');
+    const rotationNotes = state.currentRotation ? notes.filter(n => n.rotationId === state.currentRotation.id) : [];
+    if (rotationNotes.length === 0) {
+        notesGrid.innerHTML = `<div class="empty-state"><i class="fas fa-clipboard-list"></i><h3>No notes yet</h3><p>Create your first note to get started</p></div>`;
+    } else {
+        rotationNotes.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(note => {
+            const noteDate = new Date(note.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const noteEl = document.createElement('article');
+            noteEl.className = 'note-card';
+            noteEl.innerHTML = `
+                <div class="note-date">${noteDate}</div>
+                <h3 class="note-title">${note.title}</h3>
+                <div class="note-content">${note.content.replace(/\n/g, '<br>')}</div>
+                <div class="note-actions">
+                    <button class="icon-btn edit-note" data-id="${note.id}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="icon-btn delete-note" data-id="${note.id}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            `;
+            noteEl.querySelector('.edit-note').onclick = () => openNoteTakerPage(note);
+            noteEl.querySelector('.delete-note').onclick = () => {
+                if (confirm('Delete this note?')) {
+                    const notesArr = JSON.parse(localStorage.getItem('medrotate_notes') || '[]').filter(n => n.id !== note.id);
+                    localStorage.setItem('medrotate_notes', JSON.stringify(notesArr));
+                    loadNotes();
+                }
+            };
+            notesGrid.appendChild(noteEl);
+        });
+    }
+}
+
+function openRotationModal() {
+    elements.rotationModal.classList.add('active');
+    elements.rotationModal.querySelector('#rotation-name').value = '';
+    elements.rotationModal.querySelector('#rotation-icon').value = 'heart';
+    elements.rotationModal.querySelector('.btn-primary').onclick = function() {
+        const name = elements.rotationModal.querySelector('#rotation-name').value.trim();
+        const icon = elements.rotationModal.querySelector('#rotation-icon').value;
+        if (!name) return;
+        let rotations = JSON.parse(localStorage.getItem('medrotate_rotations') || 'null') || KENYA_ROTATIONS;
+        const id = name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+        rotations.push({ id, name, icon });
+        localStorage.setItem('medrotate_rotations', JSON.stringify(rotations));
+        elements.rotationModal.classList.remove('active');
+        setActiveRotation(id);
+    };
+    elements.rotationModal.querySelector('.btn-outline').onclick = function() {
+        elements.rotationModal.classList.remove('active');
+    };
+    elements.rotationModal.querySelector('.close-btn').onclick = function() {
+        elements.rotationModal.classList.remove('active');
+    };
+}
+
+function init() {
+    renderSidebarRotations();
+    setActiveRotation(KENYA_ROTATIONS[0].id);
+    setupEventListeners();
+    updateDateDisplay();
+    checkOnlineStatus();
+    simulateInitialSync();
+}
+
+init();

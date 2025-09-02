@@ -20,7 +20,7 @@
     </header>
 
     <div class="container">
-        <!-- Sidebar for rotation folders -->
+        <!-- Sidebar for rotation folders --> 
         <aside class="sidebar">
             <div class="sidebar-title">
                 <h2>My Rotations</h2>
@@ -28,27 +28,8 @@
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
-            <div class="rotations-list">
-                <div class="rotation-item active">
-                    <i class="fas fa-heart-pulse"></i>
-                    <span>Internal Medicine</span>
-                </div>
-                <div class="rotation-item">
-                    <i class="fas fa-brain"></i>
-                    <span>Surgery</span>
-                </div>
-                <div class="rotation-item">
-                    <i class="fas fa-baby"></i>
-                    <span>Pediatrics</span>
-                </div>
-                <div class="rotation-item">
-                    <i class="fas fa-bone"></i>
-                    <span>Orthopedics</span>
-                </div>
-                <div class="rotation-item">
-                    <i class="fas fa-lungs"></i>
-                    <span>Reproductive Health (OBGYN)</span>
-                </div>
+            <div class="rotations-list" id="rotations-list">
+                <!-- Rotations will be rendered by JS -->
             </div>
         </aside>
 
@@ -171,6 +152,20 @@
     <div class="offline-status">
         <i class="fas fa-wifi"></i>
         <span>You are currently offline. Changes will sync when connected.</span>
+    </div>
+
+    <!-- Add just before </body> -->
+    <div id="note-taker-page" class="note-taker-page">
+        <div class="note-taker-content">
+            <h2 id="note-taker-title"></h2>
+            <input type="text" id="note-input-title" placeholder="Note Title" />
+            <textarea id="note-input-content" rows="14" placeholder="Type your note here..."></textarea>
+            <div class="autosave-status" id="autosave-status"></div>
+            <div class="note-taker-actions">
+                <button class="btn btn-outline" id="note-taker-cancel">Cancel</button>
+                <button class="btn btn-primary" id="note-taker-save">Save</button>
+            </div>
+        </div>
     </div>
 
     <!--link to the javascript file-->
