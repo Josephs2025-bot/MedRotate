@@ -66,5 +66,5 @@ This project was my classroom. Here's how I built it:
 *   **PWA Enhancements:** Make it installable on phones and computers for a truly app-like experience.
 
 I have to acknowledge that this has been such a task, with more moments of frustration than there has been satisfaction. As a dedicated medic and a beginner in tech, I like to cerebrate my small winnings as I brace to face the bigger challenges, seeing them as opportunites of growth. The ultimate goal ramains venturing into healthtech, advancing healthcare delivery through technological solutions. I will always come back to this project, to make it better, solve what is not working, and give efforts to my missional mandate. 
- to 
+---
 *This project is a testament to the fact that with persistence and a willingness to learn, beginners can build something real and impactful. Thank you for checking it out!*
